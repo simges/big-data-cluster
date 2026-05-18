@@ -1,7 +1,8 @@
-./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
+# ./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
 
-1- HADOOP - SPARK CLUSTER SETUP
+# 1- HADOOP - SPARK CLUSTER SETUP
 
+# WRITE TO HDFS
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder \
@@ -18,7 +19,7 @@ df.write.mode("overwrite") \
 
 spark.stop()
 
-
+# READ FROM HDFS
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder \
@@ -30,7 +31,7 @@ df = spark.read.parquet("hdfs://namenode:9000/user/spark/fruits_parquet2")
 df.show()
 
 
-2- KAFKA - SPARK
+# 2- KAFKA - SPARK
 
 from pyspark.sql import SparkSession
 
@@ -53,17 +54,17 @@ query = messages.writeStream \
     .start()
 
 
-2- KAFKA - SPARK - HDFS
+# 2- KAFKA - SPARK - HDFS
 
-Kafka → Spark Streaming → HDFS (Parquet storage)
+# Kafka → Spark Streaming → HDFS (Parquet storage)
 
-Kafka (events)
-   ↓
-Spark Structured Streaming
-   ↓
-Transformations
-   ↓
-HDFS (Parquet files)
+# # # Kafka (events)
+# # #    ↓
+# # # Spark Structured Streaming
+# # #    ↓
+# # # Transformations
+# # #    ↓
+# # # HDFS (Parquet files)
 
 
 from pyspark.sql import SparkSession
@@ -97,18 +98,18 @@ query = cleaned.writeStream \
 query.awaitTermination()
 
 
------kafka-------------
-./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
+# -----kafka-------------
+# ./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
 
-apple
-banana
-apple
-orange
-banana
-apple
+# # # apple
+# # # banana
+# # # apple
+# # # orange
+# # # banana
+# # # apple
 
 
--------spark-----------------
+# -------spark-----------------
 
 from pyspark.sql import SparkSession
 
