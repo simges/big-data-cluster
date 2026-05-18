@@ -1,0 +1,49 @@
+# =====================================
+# SPARK
+# =====================================
+services:
+
+  spark-master:
+    image: apache/spark:3.5.2
+    container_name: spark-master
+    hostname: spark-master
+    networks:
+      - bigdata
+    ports:
+      - "8080:8080"   # Spark Master UI
+      - "7077:7077"   # Spark Cluster Port
+    environment:
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      - SPARK_SUBMIT_OPTIONS=--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
+    volumes:
+      - ../hadoop/hadoop-config:/opt/hadoop/etc/hadoop
+      - ../hadoop/shared-data:/data
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.master.Master
+
+  spark-worker:
+    image: apache/spark:3.5.2
+    container_name: spark-worker
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    networks:
+      - bigdata
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+    volumes:
+      - ../hadoop/hadoop-config:/opt/hadoop/etc/hadoop
+      - ../hadoop/shared-data:/data
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.worker.Worker
+      spark://spark-master:7077
+
+networks:
+  bigdata:
+    external: true
+
+volumes:
+  shared-data:
