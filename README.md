@@ -49,3 +49,11 @@ docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh   --topic test-to
 # Run Spark Job
 ./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
 -run demo.py
+
+0- WORD COUNT EXAMPLE
+1- HADOOP - SPARK CLUSTER SETUP
+2- KAFKA - SPARK
+3- KAFKA - SPARK - HDFS
+   Parquet File Format
+4- MULTI-NODE HDFS (Fault tolerance)
+5- Capacity Scheduling
