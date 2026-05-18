@@ -1,0 +1,76 @@
+services:
+
+  # =====================================
+  # HADOOP HDFS + YARN
+  # =====================================
+
+  namenode:
+    image: apache/hadoop:3.3.6
+    container_name: namenode
+    hostname: namenode
+    networks:
+      - bigdata
+    ports:
+      - "9870:9870"   # HDFS Web UI
+      - "9000:9000"   # HDFS RPC
+    environment:
+      - ENSURE_NAMENODE_DIR=/hadoop/dfs/name
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+    volumes:
+      - namenode-data:/hadoop/dfs/name
+      - ./hadoop-config:/opt/hadoop/etc/hadoop
+    command: >
+      bash -c "
+      if [ ! -d /tmp/hadoop-root/dfs/name/current ]; then
+        hdfs namenode -format -force;
+      fi &&
+      hdfs namenode
+      "
+
+  datanode:
+    image: apache/hadoop:3.3.6
+    container_name: datanode
+    hostname: datanode
+    depends_on:
+      - namenode
+    networks:
+      - bigdata
+    volumes:
+      - datanode-data:/hadoop/dfs/data
+      - ./hadoop-config:/opt/hadoop/etc/hadoop
+    command: hdfs datanode
+
+  resourcemanager:
+    image: apache/hadoop:3.3.6
+    container_name: resourcemanager
+    hostname: resourcemanager
+    depends_on:
+      - namenode
+    networks:
+      - bigdata
+    ports:
+      - "8088:8088"   # YARN UI
+    volumes:
+      - ./hadoop-config:/opt/hadoop/etc/hadoop
+    command: yarn resourcemanager
+
+  nodemanager:
+    image: apache/hadoop:3.3.6
+    container_name: nodemanager
+    hostname: nodemanager
+    depends_on:
+      - resourcemanager
+    networks:
+      - bigdata
+    volumes:
+      - ./hadoop-config:/opt/hadoop/etc/hadoop
+    command: yarn nodemanager
+
+networks:
+  bigdata:
+    external: true
+
+volumes:
+  namenode-data:
+  datanode-data:
+  shared-data:
