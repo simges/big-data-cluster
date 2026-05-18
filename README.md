@@ -1,4 +1,4 @@
-# big-data-cluster
+# Big Data Cluster
 Deploying a Big Data Cluster
 
 Kafka (events)
