@@ -53,6 +53,10 @@ docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh   --topic test-to
 # WordCount with different Spark APIs
 
 # PYSPARK
+./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
+
+&&
+
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName("WordCount").getOrCreate()
@@ -87,12 +91,27 @@ wordCounts.show();
 
 mvn clean package 
 
-spark-submit \
+./spark-submit \
   --class WordCount \
   --master local[*] \
   ../work-dir/spark-java-app-1.0-jar-with-dependencies.jar
 
-  
+# Spark SQL
+
+./spark-sql
+
+CREATE OR REPLACE TEMP VIEW text_table
+USING text
+OPTIONS (path "/user/spark/logs/logfile1.txt");
+
+SELECT word, COUNT(*) AS count
+FROM (
+    SELECT explode(split(value, ' ')) AS word
+    FROM text_table
+)
+GROUP BY word;
+
+
 0- WORD COUNT EXAMPLE
 1- HADOOP - SPARK CLUSTER SETUP
 2- KAFKA - SPARK
