@@ -46,6 +46,11 @@ apple
 # Kafka Consumer Optional
 docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh   --topic test-topic   --from-beginning   --bootstrap-server 0.0.0.0:9092
 
+# Run Hadoop WordCount
+
+hadoop jar /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /user/spark/logs/ /user/spark/word-count-out
+
+
 # Run Spark Job
 ./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
 
