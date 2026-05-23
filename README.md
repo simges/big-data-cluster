@@ -48,8 +48,51 @@ docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh   --topic test-to
 
 # Run Spark Job
 ./pyspark --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2
--run demo.py
 
+
+# WordCount with different Spark APIs
+
+# PYSPARK
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("WordCount").getOrCreate()
+
+text = spark.read.text("/user/spark/logs/logfile1.txt")
+
+from pyspark.sql.functions import explode, split
+
+words = text.select(explode(split(text.value, " ")).alias("word"))
+
+word_counts = words.groupBy("word").count()
+
+word_counts.show()
+
+# JAVA Spark
+
+SparkSession spark = SparkSession.builder()
+    .appName("WordCount")
+    .getOrCreate();
+
+Dataset<Row> text = spark.read().text("/user/spark/logs/logfile1.txt");
+
+Dataset<Row> words = text.select(
+    functions.explode(
+        functions.split(text.col("value"), " ")
+    ).alias("word")
+);
+
+Dataset<Row> wordCounts = words.groupBy("word").count();
+
+wordCounts.show();
+
+mvn clean package 
+
+spark-submit \
+  --class WordCount \
+  --master local[*] \
+  ../work-dir/spark-java-app-1.0-jar-with-dependencies.jar
+
+  
 0- WORD COUNT EXAMPLE
 1- HADOOP - SPARK CLUSTER SETUP
 2- KAFKA - SPARK
